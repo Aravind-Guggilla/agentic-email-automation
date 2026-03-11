@@ -7,6 +7,9 @@ dotenv.config();
 // Import database initializer
 const {initializeDb} = require('./config/database')
 
+// Import routes
+const emailRoutes = require('./routes/emailRoutes')
+
 // Import IMAP service
 // const startImapSync = require('./services/imapService')
 
@@ -41,6 +44,10 @@ const initializeServer = async () => {
 }
 
 initializeServer()
+
+// use routes
+app.use('/', emailRoutes)
+
 
 // simple test route
 app.get('/', (req, res) => {

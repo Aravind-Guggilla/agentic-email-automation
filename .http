@@ -1,0 +1,12 @@
+#Email Onebox Backend API Tests
+###
+GET http://localhost:3000/
+
+### Get all emails
+GET http://localhost:3000/emails
+
+### Get email by ID
+GET http://localhost:3000/emails/search?q=interview
+
+### Get email by account
+GET http://localhost:3000/emails/account/yourgmail@gmail.com
