@@ -21,3 +21,7 @@ Thumbs.db
 # Build folders
 dist/
 build/
+
+node_modules/
+.env
+*.db
