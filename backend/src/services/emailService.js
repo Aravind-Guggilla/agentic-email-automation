@@ -2,16 +2,20 @@ const {getDB} = require("../config/database")
 
 // get all emails for a specific account
 
-const getAllEmails = async () => {
+const getEmails = async (pageLimit, emailsLimit) => {
     const db = getDB()
-
+    const offset = (pageLimit - 1) * emailsLimit
     const dbQuery = `
         SELECT 
           *
         FROM
             emails
         ORDER BY
-            email_date DESC;
+            email_date DESC
+        LIMIT 
+            ${emailsLimit} 
+        OFFSET 
+            ${offset};
     `
 
     const emails = await db.all(dbQuery)
@@ -60,7 +64,7 @@ const getEmailsByAccount = async (account) => {
 }   
 
 module.exports = {
-    getAllEmails,
+    getEmails,
     searchEmails,
     getEmailsByAccount
 }

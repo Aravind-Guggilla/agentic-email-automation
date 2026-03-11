@@ -2,10 +2,16 @@ const emailService = require('../services/emailService')
 
 const getEmails = async (request, response) => {
     try{
-        const emails = await emailService.getAllEmails()
+        const {page, limit} = request.query
+        const pageLimit = parseInt(page) || 1
+        const emailsLimit = parseInt(limit) || 20
+
+        const emails = await emailService.getEmails(pageLimit, emailsLimit)
         response.status(200)
-        response.send(emails)
+        response.send({ pageLimit, emailsLimit, emails })
+              
     }catch(error){
+        response.error(error)                           
         response.status(500)
         response.send({error: 'Failed to retrieve emails'})
     }
