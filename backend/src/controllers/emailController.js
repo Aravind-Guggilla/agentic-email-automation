@@ -34,3 +34,9 @@ const getEmailsByAccount = async (request, response) => {
         response.send({error: 'Failed to retrieve emails for account'})
     }
 }
+
+module.exports = {
+    getEmails,
+    searchEmails,
+    getEmailsByAccount
+}
