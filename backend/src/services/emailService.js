@@ -20,7 +20,7 @@ const getAllEmails = async () => {
 
 //Search emails by sender, subject, or body content
 
-const searchEmials = async (searchText) => {
+const searchEmails = async (searchText) => {
     const db = getDB()
 
     const dbQuery = `
@@ -61,6 +61,6 @@ const getEmailsByAccount = async (account) => {
 
 module.exports = {
     getAllEmails,
-    searchEmials,
+    searchEmails,
     getEmailsByAccount
 }
