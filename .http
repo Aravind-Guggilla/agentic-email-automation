@@ -2,10 +2,13 @@
 ###
 GET http://localhost:3000/
 
+### get emails by page limit
+GET http://localhost:3000/emails?page=1&limit=10
+
 ### Get all emails
 GET http://localhost:3000/emails
 
-### Get email by ID
+### Get email by search query
 GET http://localhost:3000/emails/search?q=interview
 
 ### Get email by account

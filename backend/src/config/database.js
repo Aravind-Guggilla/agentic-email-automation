@@ -22,10 +22,11 @@ const initializeDb = async () => {
             subject TEXT,
             body TEXT,
             folder TEXT,
-            email_date TEXT
+            email_date TEXT,
+            category TEXT
         )`
 
-        await db.exec(createEmailsTable)
+        await db.run(createEmailsTable)
         console.log("Database initialized.")
 
     }catch(error){
@@ -34,8 +35,6 @@ const initializeDb = async () => {
     }
 
 }
-
-initializeDb()
 
 const getDB = () => db
 

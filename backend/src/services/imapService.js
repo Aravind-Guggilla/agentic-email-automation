@@ -3,6 +3,9 @@ const { simpleParser } = require('mailparser')
 const { htmlToText } = require('html-to-text')
 const { getDB } = require('../config/database')
 
+// NEW: AI categorizer
+const categorizeEmail = require('./aiService')
+
 const EMAIL_USER = process.env.EMAIL_USER
 const EMAIL_PASS = process.env.EMAIL_PASS
 
@@ -31,14 +34,14 @@ const openInbox = cb => {
 
 
 // Save email to database
-const saveEmail = async (uid, sender, subject, body, date) => {
+const saveEmail = async (uid, sender, subject, body, date, category) => {
   try {
     const db = getDB()
 
     const insertQuery = `
       INSERT OR IGNORE INTO emails
-      (uid, account, sender, subject, body, folder, email_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (uid, account, sender, subject, body, folder, email_date, category)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `
 
     await db.run(insertQuery, [
@@ -49,6 +52,7 @@ const saveEmail = async (uid, sender, subject, body, date) => {
       body,
       'INBOX',
       date,
+      category  
     ])
 
   } catch (err) {
@@ -135,10 +139,17 @@ const fetchLast30DaysEmails = () => {
           body = body.substring(0, 1500)
 
           const emailDate = parsed.date ? parsed.date.toISOString() : ''
+          // NEW: categorize email
 
-          await saveEmail(uid, sender, subject, body, emailDate)
+          const category = categorizeEmail(subject, body)
 
-          console.log('Stored:', subject)
+          await saveEmail(uid, sender, subject, body, emailDate, category)
+
+          console.log('Stored:', subject, '| Category:', category)
+
+          // await saveEmail(uid, sender, subject, body, emailDate)
+
+          // console.log('Stored:', subject)
 
         })
       })
