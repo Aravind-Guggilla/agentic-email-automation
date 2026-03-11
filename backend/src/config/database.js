@@ -7,25 +7,31 @@ const dbPath = path.join(__dirname, '../../oneBoxEmails.db')
 let db = null
 
 const initializeDb = async () => {
-    db = await open({
-        filename: dbPath,
-        driver: sqlite3.Database
-    })
+    try{
+        db = await open({
+            filename: dbPath,
+            driver: sqlite3.Database
+        })
 
-    const createEmailsTable = `
-        CREATE TABLE IF NOT EXISTS emails (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        uid INTEGER UNIQUE,
-        account TEXT,
-        sender TEXT,
-        subject TEXT,
-        body TEXT,
-        folder TEXT,
-        email_date TEXT
-     )`
+        const createEmailsTable = `
+            CREATE TABLE IF NOT EXISTS emails (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid INTEGER UNIQUE,
+            account TEXT,
+            sender TEXT,
+            subject TEXT,
+            body TEXT,
+            folder TEXT,
+            email_date TEXT
+        )`
 
-    await db.exec(createEmailsTable)
-    console.log("Database initialized.")
+        await db.exec(createEmailsTable)
+        console.log("Database initialized.")
+
+    }catch(error){
+        console.log(`DB error: ${error.message}`)
+        process.exit(1)
+    }
 
 }
 
