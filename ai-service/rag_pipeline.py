@@ -1,10 +1,15 @@
-from langchain.chat_models import init_chat_model
 import os
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
+
+from langchain.chat_models import init_chat_model
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 loader = TextLoader("data/outreach_context.txt")
 docs = loader.load()
@@ -48,6 +53,23 @@ def generate_reply(email_text):
 
     system_prompt = f"""
     You are an AI assistant helping generate professional email replies.
+
+    strictly follow the rules and format of the suggested reply in short , 
+    don't deviate from context and ensure the reply is concise and to the point.
+
+    example data: 
+    Email Category: Meeting Booked
+    Sender: Esther Shilpa (TCS)
+    Subject: Important - CHRO Connect !!
+
+    Email Content:
+    Dear Candidates, Warm greetings from the TCS team...
+    
+    suggested_reply_in_short:
+    Dear Esther, Thank you for reaching out and sharing the details of the CHRO Connect event. 
+    I appreciate the opportunity to connect with industry leaders and learn from their insights. 
+    I look forward to attending the event and engaging in meaningful discussions. Best regards, 
+    [Your Name]
 
     Context:
     {context}

@@ -52,7 +52,7 @@ const suggestReply = async (request,response) => {
         const {emailId} = request.params
         const reply = await generateReply(emailId)
         response.status(200)
-        response.send({reply})
+        response.send(reply)
     }catch(error){
         response.error(error)
         response.status(500)

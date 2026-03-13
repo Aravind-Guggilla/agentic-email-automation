@@ -7,20 +7,21 @@ app = Flask(__name__)
 def give_reply():
 
     data = request.json 
-    """ email_text = data["email"]
-
-    reply = generate_reply(email_text)
-    reply = generate_reply(data)
-     reply = generate_reply(data.get("email"))
-    """
+    # const requiredData = {}
 
     # return ({
     #     "suggested_reply": data
     # })
 
-    print("Received data:", data)
+    # print("Received data:", data) 
 
-    return data
+    reply = {
+        "sender": data.get("sender"),
+        "subject": data.get("subject"),
+        "body": data.get("body"),
+        "category": data.get("category")
+    }
 
+    return (reply), 200
 
 app.run(port=5001, debug=True)
