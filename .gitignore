@@ -1,0 +1,36 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Database files
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build folders
+dist/
+build/
+
+node_modules/
+.env
+*.db
+
+# Local development files
+venv/
+__pycache__/
+*.pyc
+.env
+chroma_db/
+node_modules/
+emails.db   

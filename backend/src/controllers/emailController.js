@@ -1,4 +1,5 @@
 const emailService = require('../services/emailService')
+const generateReply  = require("../services/aiReplyService")
 
 const getEmails = async (request, response) => {
     try{
@@ -24,6 +25,7 @@ const searchEmails = async (request, response) =>{
         response.status(200)
         response.send(emails)
     }catch(error){
+        response.error(error)
         response.status(500)
         response.send({error: 'Failed to search emails'})
     }
@@ -36,13 +38,31 @@ const getEmailsByAccount = async (request, response) => {
         response.status(200)
         response.send(emails)
     }catch(error){
+        response.error(error)
         response.status(500)
         response.send({error: 'Failed to retrieve emails for account'})
+    }
+}
+
+
+
+
+const suggestReply = async (request,response) => {
+    try{
+        const {emailId} = request.params
+        const reply = await generateReply(emailId)
+        response.status(200)
+        response.send({reply})
+    }catch(error){
+        response.error(error)
+        response.status(500)
+        response.send({error:"AI reply failed"})
     }
 }
 
 module.exports = {
     getEmails,
     searchEmails,
-    getEmailsByAccount
+    getEmailsByAccount,
+    suggestReply
 }
