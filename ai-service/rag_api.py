@@ -21,8 +21,8 @@ def give_reply():
     ai_response = generate_reply(required_data)
 
     # DEBUG: print input and output for verification
-    print("Received email:", required_data)
-    print("AI reply:", ai_response)
+    # print("Received email:", required_data)
+    # print("AI reply:", ai_response)
 
     return jsonify({
         "suggested_reply": ai_response

@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+api_key = os.getenv("GEMINI_API_KEY")
+
 # Load knowledge base
 loader = TextLoader("data/outreach_context.txt")
 docs = loader.load()
@@ -52,7 +54,7 @@ def retrieve_context(query):
 # LLM model
 model = init_chat_model(
    "google_genai:gemini-2.5-flash",
-   api_key=os.getenv("GEMINI_API_KEY"),
+   api_key=api_key,
 )
 
 
@@ -95,7 +97,6 @@ def generate_reply(email_data):
     Thank you for sharing the details of the CHRO Connect event.
     I appreciate the opportunity and look forward to attending the session.
     Best regards,
-    [Your Name]
 
     Context:
     {context}
