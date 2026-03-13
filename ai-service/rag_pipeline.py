@@ -11,9 +11,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Load knowledge base
 loader = TextLoader("data/outreach_context.txt")
 docs = loader.load()
 
+# Split text into chunks
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
     chunk_overlap=100
@@ -21,17 +23,22 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 splits = text_splitter.split_documents(docs)
 
+# Embedding model
 embedding_model = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-mpnet-base-v2"
 )
 
+# Vector DB
 vector_store = Chroma(
     collection_name="reachinbox_rag",
     embedding_function=embedding_model,
     persist_directory="./chroma_db"
 )
 
-vector_store.add_documents(splits)
+# UPDATED: prevent duplicate embeddings when server restarts
+if vector_store._collection.count() == 0:
+    vector_store.add_documents(splits)
+
 
 def retrieve_context(query):
 
@@ -42,39 +49,58 @@ def retrieve_context(query):
     return context
 
 
+# LLM model
 model = init_chat_model(
    "google_genai:gemini-2.5-flash",
    api_key=os.getenv("GEMINI_API_KEY"),
 )
 
-def generate_reply(email_text):
 
-    context = retrieve_context(email_text)
+# UPDATED: function now accepts email object instead of plain text
+def generate_reply(email_data):
+
+    # UPDATED: convert email object → formatted text
+    email_text = f"""
+    Email Category: {email_data.get("category")}
+    Sender: {email_data.get("sender")}
+    Subject: {email_data.get("subject")}
+
+    Email Content:
+    {email_data.get("body")}
+    """
+
+    # UPDATED: retrieval should use body for better semantic search
+    context = retrieve_context(email_data.get("body"))
 
     system_prompt = f"""
     You are an AI assistant helping generate professional email replies.
 
-    strictly follow the rules and format of the suggested reply in short , 
-    don't deviate from context and ensure the reply is concise and to the point.
+    Strictly follow the rules:
+    - Keep reply short and professional
+    - Do not repeat the full email
+    - Acknowledge the sender
+    - Be concise and polite
 
-    example data: 
+    Example:
+
     Email Category: Meeting Booked
     Sender: Esther Shilpa (TCS)
     Subject: Important - CHRO Connect !!
 
     Email Content:
     Dear Candidates, Warm greetings from the TCS team...
-    
-    suggested_reply_in_short:
-    Dear Esther, Thank you for reaching out and sharing the details of the CHRO Connect event. 
-    I appreciate the opportunity to connect with industry leaders and learn from their insights. 
-    I look forward to attending the event and engaging in meaningful discussions. Best regards, 
+
+    Suggested Reply:
+    Dear Esther,
+    Thank you for sharing the details of the CHRO Connect event.
+    I appreciate the opportunity and look forward to attending the session.
+    Best regards,
     [Your Name]
 
     Context:
     {context}
 
-    Write a short professional reply to the email.
+    Generate a short professional reply.
     """
 
     messages = [
