@@ -2,175 +2,149 @@ const Imap = require('node-imap')
 const { simpleParser } = require('mailparser')
 const { htmlToText } = require('html-to-text')
 const { getDB } = require('../config/database')
+const scheduleInterview = require('./calendarService')
 
-// NEW: AI categorizer
+// AI categorizer
 const categorizeEmail = require('./aiService')
 
 const EMAIL_USER = process.env.EMAIL_USER
 const EMAIL_PASS = process.env.EMAIL_PASS
 
 
-// Create IMAP connection
-const imap = new Imap({
-  user: EMAIL_USER,
-  password: EMAIL_PASS,
-  host: 'imap.gmail.com',
-  port: 993,
-  tls: true,
-  connTimeout: 30000,
-  authTimeout: 30000,
-  keepalive: {
-    interval: 10000,
-    idleInterval: 300000,
-    forceNoop: true
-  }
-})
-
-
-// Open inbox
-const openInbox = cb => {
-  imap.openBox('INBOX', false, cb)
-}
-
-
 // Save email to database
 const saveEmail = async (uid, sender, subject, body, date, category) => {
+
   try {
+
     const db = getDB()
 
-    const insertQuery = `
-      INSERT OR IGNORE INTO emails
+    const result = await db.run(
+      `INSERT OR IGNORE INTO emails
       (uid, account, sender, subject, body, folder, email_date, category)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        uid,
+        EMAIL_USER,
+        sender,
+        subject,
+        body,
+        'INBOX',
+        date,
+        category
+      ]
+    )
 
-    await db.run(insertQuery, [
-      uid,
-      EMAIL_USER,
-      sender,
-      subject,
-      body,
-      'INBOX',
-      date,
-      category  
-    ])
+    // return true if inserted
+    return result.changes > 0
 
   } catch (err) {
+
     console.log('DB insert error:', err.message)
+    return false
+
   }
+
 }
 
 
-// Fetch emails from last 30 days
-const fetchLast30DaysEmails = () => {
+// Process email message
+const processEmail = (msg) => {
 
-  const date = new Date()
-  date.setDate(date.getDate() - 30)
+  let uid = null
 
-  const day = date.getDate()
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-  const month = months[date.getMonth()]
-  const year = date.getFullYear()
+  msg.once('attributes', attrs => {
+    uid = attrs.uid
+  })
 
-  const sinceDate = `${day}-${month}-${year}`
+  msg.on('body', stream => {
 
-  console.log("Fetching emails since:", sinceDate)
+    simpleParser(stream, async (err, parsed) => {
 
-  imap.search([['SINCE', sinceDate]], (err, results) => {
+      if (err) {
+        console.log('Parse error:', err)
+        return
+      }
 
-    if (err) {
-      console.log('Search error:', err)
-      imap.end()
-      return
-    }
+      const sender = parsed.from?.text || ''
+      const subject = parsed.subject || '(No Subject)'
 
-    if (!results || results.length === 0) {
-      console.log('No emails found in last 30 days')
-      imap.end()
-      return
-    }
+      let body = ''
 
-    const fetch = imap.fetch(results, { bodies: '' })
+      // Prefer HTML emails
+      if (parsed.html) {
 
-    fetch.on('message', msg => {
-
-      let uid = null
-
-      msg.once('attributes', attrs => {
-        uid = attrs.uid
-      })
-
-      msg.on('body', stream => {
-
-        simpleParser(stream, async (err, parsed) => {
-
-          if (err) {
-            console.log('Parse error:', err)
-            return
-          }
-
-          const sender = parsed.from?.text || ''
-          const subject = parsed.subject || '(No Subject)'
-
-          let body = ''
-
-          // Prefer HTML conversion (most emails are HTML)
-          if (parsed.html) {
-            body = htmlToText(parsed.html, {
-              wordwrap: 130,
-              selectors: [
-                { selector: 'img', format: 'skip' },
-                { selector: 'a', options: { ignoreHref: true } }
-              ]
-            })
-          } else if (parsed.text) {
-            body = parsed.text
-          }
-
-          // Remove common footer sections
-          body = body.replace(/unsubscribe[\s\S]*/gi, '')
-          body = body.replace(/this is a system generated email[\s\S]*/gi, '')
-          body = body.replace(/you are receiving this email[\s\S]*/gi, '')
-
-          // Clean whitespace
-          body = body.replace(/\s+/g, ' ').trim()
-
-          // Limit size
-          body = body.substring(0, 1500)
-
-          const emailDate = parsed.date ? parsed.date.toISOString() : ''
-          // NEW: categorize email
-
-          const category = categorizeEmail(subject, body)
-
-          await saveEmail(uid, sender, subject, body, emailDate, category)
-
-          console.log('Stored:', subject, '| Category:', category)
-
-          // await saveEmail(uid, sender, subject, body, emailDate)
-
-          // console.log('Stored:', subject)
-
+        body = htmlToText(parsed.html, {
+          wordwrap: 130,
+          selectors: [
+            { selector: 'img', format: 'skip' },
+            { selector: 'a', options: { ignoreHref: true } }
+          ]
         })
-      })
-    })
 
-    fetch.once('error', err => {
-      console.log('Fetch error:', err)
-      imap.end()
-    })
+      } else if (parsed.text) {
 
-    fetch.once('end', () => {
-      console.log('Finished fetching emails')
-      imap.end()
+        body = parsed.text
+
+      }
+
+      // Remove common email footers
+      body = body.replace(/unsubscribe[\s\S]*/gi, '')
+      body = body.replace(/this is a system generated email[\s\S]*/gi, '')
+      body = body.replace(/you are receiving this email[\s\S]*/gi, '')
+
+      // Clean whitespace
+      body = body.replace(/\s+/g, ' ').trim()
+
+      // Limit body length
+      body = body.substring(0, 1500)
+
+      const emailDate = parsed.date ? parsed.date.toISOString() : ''
+
+      // Categorize email
+      const category = categorizeEmail(subject, body)
+
+      // Save email
+      const inserted = await saveEmail(uid, sender, subject, body, emailDate, category)
+
+      // Only schedule if it's a new email
+      if (inserted && category === "Meeting Booked") {
+
+        await scheduleInterview(subject, body)
+
+      }
+
+      console.log('New Email Stored:', subject, '| Category:', category)
+
     })
 
   })
+
 }
 
 
 // Start IMAP sync
 const startImapSync = () => {
+
+  const imap = new Imap({
+    user: EMAIL_USER,
+    password: EMAIL_PASS,
+    host: 'imap.gmail.com',
+    port: 993,
+    tls: true,
+    connTimeout: 30000,
+    authTimeout: 30000,
+    keepalive: {
+      interval: 10000,
+      idleInterval: 300000,
+      forceNoop: true
+    }
+  })
+
+
+  const openInbox = cb => {
+    imap.openBox('INBOX', false, cb)
+  }
+
 
   imap.once('ready', () => {
 
@@ -179,32 +153,59 @@ const startImapSync = () => {
     openInbox(err => {
 
       if (err) {
+
         console.log('Inbox error:', err)
         imap.end()
         return
+
       }
 
-      console.log('Inbox opened')
+      console.log('Inbox opened and listening for new emails...')
 
-      fetchLast30DaysEmails()
+      // Triggered when new emails arrive
+      imap.on('mail', numNewMsgs => {
+
+        console.log(`New email received (${numNewMsgs})`)
+
+        const fetch = imap.seq.fetch(`${imap.seq.no - numNewMsgs + 1}:*`, {
+          bodies: '',
+          struct: true
+        })
+
+        fetch.on('message', processEmail)
+
+        fetch.once('error', err => {
+          console.log('Fetch error:', err)
+        })
+
+      })
 
     })
+
   })
 
 
   imap.once('error', err => {
+
     console.log('IMAP error:', err)
+
   })
 
 
+  // Auto reconnect if connection drops
   imap.once('end', () => {
-    console.log('IMAP connection closed')
+
+    console.log('IMAP connection closed. Reconnecting in 5 seconds...')
+
+    setTimeout(startImapSync, 5000)
+
   })
 
 
   console.log('IMAP sync started')
 
   imap.connect()
+
 }
 
 

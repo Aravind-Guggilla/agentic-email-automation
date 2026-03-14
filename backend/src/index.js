@@ -11,7 +11,7 @@ const {initializeDb} = require('./config/database')
 const emailRoutes = require('./routes/emailRoutes')
 
 // Import IMAP service
-// const startImapSync = require('./services/imapService')
+const startImapSync = require('./services/imapService')
 
 const app = express()
 
@@ -22,6 +22,11 @@ app.use(express.json())
 
 const PORT = process.env.PORT || 3000
 
+
+// use routes
+app.use('/', emailRoutes)
+
+
 // Initialize everything
 const initializeServer = async () => {
   try {
@@ -30,7 +35,7 @@ const initializeServer = async () => {
     console.log('Database connected')
 
     // STEP 2: Start IMAP sync
-    // startImapSync()
+    startImapSync()
     // console.log('IMAP sync started')
 
     // STEP 3: Start express server
@@ -44,9 +49,6 @@ const initializeServer = async () => {
 }
 
 initializeServer()
-
-// use routes
-app.use('/', emailRoutes)
 
 
 // simple test route
