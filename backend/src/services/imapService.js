@@ -163,22 +163,22 @@ const startImapSync = () => {
       console.log('Inbox opened and listening for new emails...')
 
       // Triggered when new emails arrive
-      imap.on('mail', numNewMsgs => {
+        imap.on('mail', numNewMsgs => {
 
-        console.log(`New email received (${numNewMsgs})`)
+            console.log(`New email received (${numNewMsgs})`)
 
-        const fetch = imap.seq.fetch(`${imap.seq.no - numNewMsgs + 1}:*`, {
-          bodies: '',
-          struct: true
+            const fetch = imap.fetch('*', {
+                bodies: '',
+                struct: true
+            })
+
+            fetch.on('message', processEmail)
+
+            fetch.once('error', err => {
+                console.log('Fetch error:', err)
+            })
+
         })
-
-        fetch.on('message', processEmail)
-
-        fetch.once('error', err => {
-          console.log('Fetch error:', err)
-        })
-
-      })
 
     })
 

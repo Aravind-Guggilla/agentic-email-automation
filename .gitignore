@@ -34,3 +34,5 @@ __pycache__/
 chroma_db/
 node_modules/
 emails.db   
+
+backend/src/config/credentials.json

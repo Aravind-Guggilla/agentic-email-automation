@@ -25,3 +25,5 @@ build/
 node_modules/
 .env
 *.db
+
+backend/src/config/credentials.json

@@ -1,4 +1,18 @@
 const chrono = require('chrono-node')
+const { google } = require('googleapis')
+
+const credentials = require('../config/credentials.json')
+
+const authClient = new google.auth.GoogleAuth({
+  credentials: credentials,
+  scopes: ['https://www.googleapis.com/auth/calendar'],
+})
+
+const calendar = google.calendar({
+  version: 'v3',
+  auth: authClient
+})
+
 
 const scheduleInterview = async (subject, body) => {
 
@@ -6,7 +20,6 @@ const scheduleInterview = async (subject, body) => {
 
     const text = (subject + " " + body).toLowerCase()
 
-    // Only schedule if interview related keywords exist
     const interviewKeywords = [
       "interview",
       "meeting",
@@ -34,7 +47,25 @@ const scheduleInterview = async (subject, body) => {
 
     console.log("Interview detected at:", parsedDate)
 
-    console.log("Calendar event created for interview")
+    const event = {
+      summary: subject || "Interview Event",
+      description: body,
+      start: {
+        dateTime: parsedDate.toISOString(),
+        timeZone: "Asia/Kolkata",
+      },
+      end: {
+        dateTime: new Date(parsedDate.getTime() + 60 * 60 * 1000).toISOString(),
+        timeZone: "Asia/Kolkata",
+      },
+    }
+
+    await calendar.events.insert({
+      calendarId: "primary",
+      resource: event,
+    })
+
+    console.log("Calendar event created")
 
   } catch (error) {
 
@@ -43,4 +74,5 @@ const scheduleInterview = async (subject, body) => {
   }
 
 }
+
 module.exports = scheduleInterview 
