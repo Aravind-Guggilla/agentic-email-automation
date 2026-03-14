@@ -1,3 +1,26 @@
+# python
+venv/
+__pycache__/
+*.pyc
+
+# node
+node_modules/
+
+# env
+.env
+
+# secrets
+credentials/
+*.json
+
+# database
+*.db
+
+# vector db
+chroma_db/
+vector_db/
+
+
 # Node modules
 node_modules/
 
@@ -25,14 +48,5 @@ build/
 node_modules/
 .env
 *.db
-
-# Local development files
-venv/
-__pycache__/
-*.pyc
-.env
-chroma_db/
-node_modules/
-emails.db   
 
 backend/src/config/credentials.json
