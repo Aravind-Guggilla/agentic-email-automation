@@ -19,8 +19,8 @@ const scheduleInterview = async (subject, body) => {
   try {
 
     const text = (subject + " " + body).toLowerCase()
-
-    const interviewKeywords = [  // Add more keywords as needed
+    // Check for interview-related keywords in the email content
+    const interviewKeywords = [  // Add more keywords as needed 
       "interview",
       "meeting",
       "discussion",
