@@ -20,7 +20,7 @@ const scheduleInterview = async (subject, body) => {
 
     const text = (subject + " " + body).toLowerCase()
 
-    const interviewKeywords = [
+    const interviewKeywords = [  // Add more keywords as needed
       "interview",
       "meeting",
       "discussion",
