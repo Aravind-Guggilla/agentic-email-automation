@@ -30,7 +30,7 @@ const initializeDb = async () => {
         console.log("Database is initialized and ready.")
 
     }catch(error){
-        console.log(`DB error: ${error.message}`)
+        console.log(`Database error: ${error.message}`)
         process.exit(1)
     }
 
