@@ -27,7 +27,7 @@ const initializeDb = async () => {
         )`
 
         await db.run(createEmailsTable)
-        console.log("Database is initialized.")
+        console.log("Database is initialized and ready.")
 
     }catch(error){
         console.log(`DB error: ${error.message}`)
