@@ -5,7 +5,7 @@ const { getDB } = require('../config/database')
 const scheduleInterview = require('./calendarService')
 
 // AI categorizer
-const categorizeEmail = require('./aiService')
+const categorizeEmail = require('./aiCategorizeService')
 
 const EMAIL_USER = process.env.EMAIL_USER
 const EMAIL_PASS = process.env.EMAIL_PASS
