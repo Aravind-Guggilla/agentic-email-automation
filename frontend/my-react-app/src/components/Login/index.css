@@ -1,0 +1,278 @@
+/* Login Page Container */
+.login-page-container {
+  display: flex;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/* Brand Panel Styling (Left Side) */
+.brand-panel {
+  flex: 1;
+  background: radial-gradient(
+    circle at 10% 20%,
+    rgb(26, 26, 26) 0%,
+    rgb(13, 13, 13) 90.2%
+  );
+
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.brand-content {
+  max-width: 440px;
+  min-width: 0;
+}
+
+.brand-heading {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 24px;
+}
+
+.brand-tagline {
+  font-size: 18px;
+  line-height: 1.6;
+  opacity: 0.85;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+
+.brand-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.brand-features li {
+  font-size: 15px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.brand-features li::before {
+  content: '—';
+  margin-right: 12px;
+  opacity: 0.6;
+}
+
+/* Form Panel Styling (Right Side) */
+.form-panel {
+  flex: 1;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.form-content {
+  width: 100%;
+  max-width: 420px;
+  min-width: 0;
+}
+
+.form-heading {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.form-subheading {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Error Alert Box */
+.error-box {
+  background-color: #fef2f2;
+  border-left: 4px solid #dc2626;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #dc2626;
+}
+
+/* Input Groups */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #1f2937;
+  text-transform: uppercase;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+  color: #1f2937;
+}
+
+.forgot-password-link:focus-visible {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+}
+
+/* Form Inputs */
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #1f2937;
+  background-color: #f9fafb;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-input:hover {
+  border-color: #9ca3af;
+}
+
+.form-input:focus {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+  border-color: #1e3a5f;
+  background-color: #ffffff;
+}
+
+/* Submit Button */
+.submit-btn {
+  background-color: #1f2937;
+  color: #ffffff;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:focus-visible {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+}
+
+.submit-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Signup Prompt */
+.signup-prompt {
+  font-size: 13px;
+  color: #4b5563;
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.signup-link {
+  font-weight: 700;
+  color: #1f2937;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.signup-link:hover {
+  color: #1e3a5f;
+}
+
+.signup-link:focus-visible {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .login-page-container {
+    flex-direction: column;
+  }
+
+  .brand-panel {
+    flex: none;
+    padding: 40px 24px;
+  }
+
+  .brand-heading {
+    font-size: 32px;
+  }
+
+  .brand-tagline {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .brand-features {
+    gap: 12px;
+  }
+
+  .form-panel {
+    flex: 1;
+    padding: 48px 24px;
+    align-items: flex-start;
+  }
+
+  .form-heading {
+    font-size: 26px;
+  }
+}
