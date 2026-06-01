@@ -1,0 +1,272 @@
+/* AI Copilot Side Pane */
+.ai-copilot-pane {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+  background-color: transparent;
+  padding: 0;
+  border-left: none;
+  overflow-y: visible;
+}
+
+/* Premium AI Card Base */
+.ai-card {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle Glowing AI Accent Border */
+.ai-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-purple),
+    #a855f7,
+    var(--accent-purple)
+  );
+  background-size: 200% auto;
+  animation: shine 6s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.ai-card:hover {
+  box-shadow: var(--shadow-premium);
+  transform: translateY(-2px);
+  border-color: var(--accent-purple-border);
+}
+
+/* AI Section Card Titles */
+.ai-card-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-purple);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Executive Summary text styling */
+.ai-summary-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  background-color: rgba(140, 82, 255, 0.03);
+  border: 1px dashed var(--accent-purple-border);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.ai-summary-text::before {
+  content: '“';
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 24px;
+  font-family: serif;
+  color: rgba(140, 82, 255, 0.2);
+  line-height: 1;
+}
+
+/* Recommended actions wrapper */
+.ai-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Action button items */
+.ai-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.ai-action-btn:hover {
+  background-color: var(--accent-purple-light);
+  border-color: var(--accent-purple-border);
+  color: var(--accent-purple);
+  transform: scale(1.02);
+}
+
+.ai-action-btn span:first-child {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+}
+
+/* Suggested Draft card layout details */
+.draft-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-draft-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.ai-draft-btn:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
+}
+
+.ai-draft-btn:active {
+  transform: translateY(0);
+}
+
+.ai-draft-textarea-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.ai-draft-textarea {
+  width: 100%;
+  height: 160px;
+  border: 1px solid var(--border-primary);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  resize: none;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.ai-draft-textarea:focus {
+  background-color: var(--bg-primary);
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 3px var(--accent-purple-light);
+}
+
+/* Empty State / Fallbacks styles */
+.ai-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.ai-empty-card::before {
+  display: none; /* Hide top gradient strip for empty state */
+}
+
+.ai-empty-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  animation: pulseIcon 2s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.ai-empty-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-primary);
+}
+
+.ai-empty-text {
+  font-size: 11.5px;
+  text-align: center;
+  margin-top: 8px;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  max-width: 200px;
+}
+
+.ai-no-actions {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0;
+  padding: 12px;
+  border: 1px dashed var(--border-primary);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+}
+
+.ai-card.draft-card {
+  gap: 16px;
+}
+
+.draft-header-title {
+  margin: 0;
+}
+
+/* Responsive adjustment */
+@media (max-width: 1024px) {
+  .ai-copilot-pane {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
